@@ -1,0 +1,38 @@
+pipeline {
+
+  environment {
+    dockerimagename = "yossid4/webapp"
+    dockerImage = ""
+  }
+
+  agent any
+
+  stages {
+
+    stage('Checkout Source') {
+      steps {
+        git branch: 'main', url: 'https://github.com/yossid4/Myapp.git'     
+        }
+    }
+
+    stage('Build image') {
+      steps{
+        script {
+          dockerImage = docker.build dockerimagename
+        }
+      }
+    }
+
+ 
+
+    stage('Deploying App to Kubernetes') {
+      steps {
+        script {
+          kubernetesDeploy(configs: "deployment.yml", kubeconfigId: "minikube")
+        }
+      }
+    }
+
+  }
+
+}
